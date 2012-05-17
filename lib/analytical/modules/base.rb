@@ -78,6 +78,36 @@ module Analytical
         end
       end
 
+      #
+      # The following methods are used to return the JavaScript helper code for
+      # Analytical.track() and Analytical.event(), when the :javascript_helpers
+      # is enabled.
+      #
+      # To override in a subclass, return a string of JavaScript which references
+      # the arguments `data` for track(), and `name` and `data` for event().
+      #
+      # For example:
+      # def event_javascript
+      #   js = <<-HTML
+      #   _gaq.push(['_trackEvent', data.category, name, data.label, data.value, data.noninteraction]);
+      #   HTML
+      # end
+
+      # The result of the following method will be included in a JavaScript function
+      # track = function(data) {
+      #   // Your code here...
+      # }
+      def track_javascript
+        track('__PAGE__').gsub(/"__PAGE__"/,'page') if respond_to?(:track)
+      end
+
+      # The result of the following method will be included in a JavaScript function
+      # event = function(name, data) {
+      #   // Your code here...
+      # }
+      def event_javascript
+        event('__EVENT__', {}).gsub(/"__EVENT__"/,'name').gsub(/"?\{\}"?/,'data') if respond_to?(:event)
+      end
     end
   end
 end

@@ -24,20 +24,28 @@ describe "Analytical::Modules::Google" do
   describe '#event' do
     it 'should return the event javascript' do
       @api = Analytical::Modules::Google.new :parent=>@parent, :key=>'abcdef'
-      @api.event('pagename').should ==  "_gaq.push(['_trackEvent', \"Event\", \"pagename\"]);"
+      @api.event('pagename').should ==  '_gaq.push(["_trackEvent","Event","pagename"]);'
     end
     
-    it 'should include data value' do
+    it 'should default the category to "Event" if none is specified' do
       @api = Analytical::Modules::Google.new :parent=>@parent, :key=>'abcdef'
-      @api.event('pagename', {:value=>555, :more=>'info'}).should ==  "_gaq.push(['_trackEvent', \"Event\", \"pagename\", 555]);"
+      @api.event('pagename').should ==  '_gaq.push(["_trackEvent","Event","pagename"]);'
+    end
+    it 'should include data value, in the "opt_value" argument' do
+      @api = Analytical::Modules::Google.new :parent=>@parent, :key=>'abcdef'
+      @api.event('pagename', {:value=>555, :more=>'info'}).should ==  '_gaq.push(["_trackEvent","Event","pagename",null,555]);'
+    end
+    it 'should include category, label, value, and noninteraction, if specified' do
+      @api = Analytical::Modules::Google.new :parent=>@parent, :key=>'abcdef'
+      @api.event('pagename', {:category=>'Thing', :label=>'description', :value=>555, :noninteraction=>true}).should == '_gaq.push(["_trackEvent","Thing","pagename","description",555,true]);'
     end
     it 'should not include data if there is no value' do
       @api = Analytical::Modules::Google.new :parent=>@parent, :key=>'abcdef'
-      @api.event('pagename', {:more=>'info'}).should ==  "_gaq.push(['_trackEvent', \"Event\", \"pagename\"]);"
+      @api.event('pagename', {:more=>'info'}).should ==  '_gaq.push(["_trackEvent","Event","pagename"]);'
     end
     it 'should not include data if it is not a hash' do
       @api = Analytical::Modules::Google.new :parent=>@parent, :key=>'abcdef'
-      @api.event('pagename', 555).should ==  "_gaq.push(['_trackEvent', \"Event\", \"pagename\", 555]);"
+      @api.event('pagename', 555).should ==  '_gaq.push(["_trackEvent","Event","pagename"]);'
     end
 
   end

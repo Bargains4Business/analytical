@@ -23,7 +23,7 @@ module Analytical
                 _gaq.push(['_setCustomVar', custom_variables[i].slot, custom_variables[i].key, custom_variables[i].value, custom_variables[i].scope ]);
               }
             }
-             _gaq.push(['_trackPageview']);
+            #{"_gaq.push(['_trackPageview']);" unless options[:manually_track_pageviews]}
             (function() {
               var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
               ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -54,10 +54,23 @@ module Analytical
       end
 
       def event(name, *args)
-        data = args.first || {}
-        data = data[:value] if data.is_a?(Hash)
-        data_string = !data.nil? ? ", #{data}" : ""
-        "_gaq.push(['_trackEvent', \"Event\", \"#{name}\"" + data_string + "]);"
+        data = args.first
+        data = {} unless data.is_a?(Hash)
+        category = data[:category] || "Event"
+        action = name
+        label, value, noninteraction = data[:label], data[:value], data[:noninteraction]
+        args = ['_trackEvent', category, action, label, value, noninteraction]
+        args.pop while args[-1].nil?
+        "_gaq.push(#{args.to_json});"
+      end
+
+      def event_javascript
+        js = <<-HTML
+        if (data.category == null) {
+          data.category = "Event";
+        }
+        _gaq.push(['_trackEvent', data.category, name, data.label, data.value, data.noninteraction]);
+        HTML
       end
       
       def custom_event(category, action, opt_label=nil, opt_value=nil)
