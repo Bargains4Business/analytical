@@ -24,6 +24,7 @@ module Analytical
               }
             }
             #{"_gaq.push(['_trackPageview']);" unless options[:manually_track_pageviews]}
+            setTimeout("_gaq.push(['_trackEvent', '15_seconds', 'read'])",15000);
             (function() {
               var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
               ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -72,7 +73,7 @@ module Analytical
         _gaq.push(['_trackEvent', data.category, name, data.label, data.value, data.noninteraction]);
         HTML
       end
-      
+
       def custom_event(category, action, opt_label=nil, opt_value=nil)
         args = [category, action, opt_label, opt_value].compact
         "_gaq.push(" + [ "_trackEvent", *args].to_json + ");"
