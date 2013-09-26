@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{analytical}
-  s.version = "3.0.12"
+  s.name = "analytical"
+  s.version = "3.0.13"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Joshua Krall", "Nathan Phelps", "Adam Anderson", "Kevin Menard", "Ablyamitov Ablyamit", "Kurt Werle", "Olivier Lauzon", "Daniel Doubrovkine"]
-  s.date = %q{2012-01-24}
-  s.description = %q{Gem for managing multiple analytics services in your rails app.}
-  s.email = %q{josh@feefighters.com}
+  s.date = "2013-09-26"
+  s.description = "Gem for managing multiple analytics services in your rails app."
+  s.email = "josh@feefighters.com"
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "lib/analytical/modules/crazy_egg.rb",
     "lib/analytical/modules/google.rb",
     "lib/analytical/modules/google_optimizer.rb",
+    "lib/analytical/modules/google_universal.rb",
     "lib/analytical/modules/hubspot.rb",
     "lib/analytical/modules/kiss_metrics.rb",
     "lib/analytical/modules/loopfuse.rb",
@@ -46,10 +47,10 @@ Gem::Specification.new do |s|
     "lib/analytical/session_command_store.rb",
     "rails/init.rb"
   ]
-  s.homepage = %q{http://github.com/jkrall/analytical}
+  s.homepage = "http://github.com/jkrall/analytical"
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
-  s.summary = %q{Gem for managing multiple analytics services in your rails app.}
+  s.rubygems_version = "1.8.11"
+  s.summary = "Gem for managing multiple analytics services in your rails app."
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
