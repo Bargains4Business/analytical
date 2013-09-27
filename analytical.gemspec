@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "analytical"
-  s.version = "3.0.13"
+  s.version = "3.0.14"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Joshua Krall", "Nathan Phelps", "Adam Anderson", "Kevin Menard", "Ablyamitov Ablyamit", "Kurt Werle", "Olivier Lauzon", "Daniel Doubrovkine"]
-  s.date = "2013-09-26"
+  s.date = "2013-09-27"
   s.description = "Gem for managing multiple analytics services in your rails app."
   s.email = "josh@feefighters.com"
   s.extra_rdoc_files = [

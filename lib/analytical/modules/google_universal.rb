@@ -30,7 +30,7 @@ module Analytical
           name_words = name.split(' ')
           action = name_words.first
           category = name_words[1..name_words.size].join('')
-          "ga('send', {'hitType': 'event', 'eventCategory': '#{category}', eventAction': '#{action}', 'eventValue': 1});"
+          "ga('send', {'hitType': 'event', 'eventCategory': '#{category}', 'eventAction': '#{action}', 'eventValue': 1});"
         end
       end
 
