@@ -20,7 +20,7 @@ module Analytical
 
             ga('create', '#{options[:key]}', '#{options[:domain]}');
             ga('send', 'pageview');
-            setTimeout("ga(‘send’,’event’,’Valid Pageview’,’time on page more than 15 seconds’)",15000);
+            setTimeout("ga('send','event','Valid Pageview','time on page more than 15 seconds')",15000);
 
           </script>
           HTML
