@@ -30,6 +30,10 @@ module Analytical
         end
       end
 
+      def enabled?
+        !(options[:js_url_key].blank?)
+      end
+
       def identify(id, *args)
         data = args.first || {}
         "_kmq.push([\"identify\", \"#{data[:email]}\"]);"

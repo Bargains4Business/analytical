@@ -1,19 +1,36 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe "Analytical::Api" do
+  before(:each) do
+    def enabled_mock(name)
+      m = mock(name)
+      m.stub(:enabled?) { true }
+      m
+    end
+  end
 
   describe 'on initialization' do
     it 'should construct an api class for each module' do
-      Analytical::Modules::Console.should_receive(:new).and_return(@console = mock('console'))
-      Analytical::Modules::Google.should_receive(:new).and_return(@google = mock('google'))
+      Analytical::Modules::Console.should_receive(:new).and_return(@console = enabled_mock('console'))
+      Analytical::Modules::Google.should_receive(:new).and_return(@google = enabled_mock('google'))
       a = Analytical::Api.new :modules=>[:console, :google]
       a.modules.should == {
         :console=>@console,
         :google=>@google,
       }
     end
+    it 'should exclude modules that are disabled via #enabled?' do
+      Analytical::Modules::Console.should_receive(:new).and_return(@console = enabled_mock('console'))
+      @google = mock('google')
+      @google.stub(:enabled?) { false }
+      Analytical::Modules::Google.should_receive(:new).and_return(@google)
+      a = Analytical::Api.new :modules=>[:console, :google]
+      a.modules.should == {
+        :console=>@console
+      }
+    end
     it 'should pass the ssl option on to the module constructor' do
-      Analytical::Modules::Console.should_receive(:new).with(hash_including(:ssl=>true)).and_return(@console = mock('console'))
+      Analytical::Modules::Console.should_receive(:new).with(hash_including(:ssl=>true)).and_return(@console = enabled_mock('console'))
       Analytical::Api.new :modules=>[:console], :ssl=>true
     end
     describe 'with a session option' do
@@ -21,10 +38,10 @@ describe "Analytical::Api" do
         @session = {}
       end
       it 'should create a new SessionCommandStore for each module' do
-        Analytical::SessionCommandStore.should_receive(:new).with(@session, :console).and_return(@console_store = mock('console_store'))
-        Analytical::SessionCommandStore.should_receive(:new).with(@session, :google).and_return(@google_store = mock('google_store'))        
-        Analytical::Modules::Console.should_receive(:new).with(:session_store=>@console_store, :session=>@session).and_return(mock('console'))
-        Analytical::Modules::Google.should_receive(:new).with(:session_store=>@google_store, :session=>@session).and_return(mock('google'))
+        Analytical::SessionCommandStore.should_receive(:new).with(@session, :console).and_return(@console_store = enabled_mock('console_store'))
+        Analytical::SessionCommandStore.should_receive(:new).with(@session, :google).and_return(@google_store = enabled_mock('google_store'))
+        Analytical::Modules::Console.should_receive(:new).with(:session_store=>@console_store, :session=>@session).and_return(enabled_mock('console'))
+        Analytical::Modules::Google.should_receive(:new).with(:session_store=>@google_store, :session=>@session).and_return(enabled_mock('google'))
         Analytical::Api.new :modules=>[:console, :google], :session=>@session
       end
     end
@@ -32,10 +49,10 @@ describe "Analytical::Api" do
 
   describe 'with modules' do
     before(:each) do
-      Analytical::Modules::Console.stub!(:new).and_return(@console = mock('console'))
-      Analytical::Modules::Google.stub!(:new).and_return(@google = mock('google'))
-      Analytical::Modules::Clicky.stub!(:new).and_return(@clicky = mock('clicky'))
-      Analytical::Modules::Chartbeat.stub!(:new).and_return(@chartbeat = mock('chartbeat'))
+      Analytical::Modules::Console.stub!(:new).and_return(@console = enabled_mock('console'))
+      Analytical::Modules::Google.stub!(:new).and_return(@google = enabled_mock('google'))
+      Analytical::Modules::Clicky.stub!(:new).and_return(@clicky = enabled_mock('clicky'))
+      Analytical::Modules::Chartbeat.stub!(:new).and_return(@chartbeat = enabled_mock('chartbeat'))
 
       @api = Analytical::Api.new :modules=>[:console, :google]
     end
@@ -73,7 +90,13 @@ describe "Analytical::Api" do
         @google.should_receive(:respond_to?).with(:track).and_return(false)
         @google.should_not_receive(:track)
 
-        @api.now.track('something', {:a=>1, :b=>2}).should == "console track\nclicky track"
+        @api.now.track('something', {:a=>1, :b=>2}).should =~ /console track.*clicky track/m
+      end
+      
+      it "should handle additional excludeModules argument" do
+        @api = Analytical::Api.new :modules=>[:console]
+        @console.should_receive(:track).with('something', {:a=>1, :b=>2}).and_return('console track')
+        @api.now.track('something', {:a=>1, :b=>2}).should =~ /#{Regexp.escape("if (!options || !options.filterModules || options.filterModules['console'])")}/
       end
     end
 

@@ -118,10 +118,14 @@ You call these analytical commands like this:
 
 When you call these commands, it will pass the track/event name & data on to each of the modules.  (Take a look at the simple javascript helpers in your <head> for more information.)
 
-To disable this functionality, use
+You can filter the modules invoked by these javascript helpers with an optional final parameter:
+
+    <script type="text/javascript">Analytical.track('/some/url', {filterModules: {google: true}});</script>
+    <script type="text/javascript">Analytical.event('A javascript event', {with: 'data'}, {filterModules: {google: true}});</script>
+
+To disable javascript helper functionality, use
 
     analytical :javascript_helpers => false
-
 
 == Note on Patches/Pull Requests
 

@@ -15,6 +15,10 @@ module Analytical
         @options[:ssl] ? 'https' : 'http'
       end
 
+      def enabled?
+        true
+      end
+
       #
       # The core methods that most analytics services implement are listed below.
       # Modules will ignore any calls that they don't respond to, allowing them to
@@ -94,7 +98,7 @@ module Analytical
       # end
 
       # The result of the following method will be included in a JavaScript function
-      # track = function(data) {
+      # track = function(page) {
       #   // Your code here...
       # }
       def track_javascript
@@ -107,6 +111,14 @@ module Analytical
       # }
       def event_javascript
         event('__EVENT__', {}).gsub(/"__EVENT__"/,'name').gsub(/"?\{\}"?/,'data') if respond_to?(:event)
+      end
+
+      # The result of the following method will be included in a JavaScript function
+      # set = function(data) {
+      #   // Your code here...
+      # }
+      def set_javascript
+        set({}).gsub(/"?\{\}"?/,'data') if respond_to?(:event)
       end
     end
   end

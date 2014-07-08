@@ -36,18 +36,8 @@ module Analytical
         end
       end
 
-      # slot: 1-5 allowed
-      # key: String
-      # value: String
-      # scope: 1 (visitor-level), 2 (session-level), or 3 (page-level)
-      def custom_variable(slot, key, value, scope)
-        js = <<-HTML
-        <script type="text/javascript">
-          if (typeof window.custom_variables == 'undefined') window.custom_variables = [];
-          window.custom_variables.push({slot: #{slot}, key: '#{key}', value: '#{value}', scope: #{scope}});
-        </script>
-        HTML
-        js
+      def enabled?
+        !(options[:key].blank?)
       end
 
       def track(*args)
@@ -98,13 +88,39 @@ module Analytical
           index = data[:index].to_i
           name  = data[:name ]
           value = data[:value]
-          scope = data[:scope]
+          scope = case data[:scope].to_s
+          when '1', '2', '3' then data[:scope].to_i
+          when 'visitor' then 1
+          when 'session' then 2
+          when 'page' then 3
+          else nil
+          end
           if (1..5).to_a.include?(index) && !name.nil? && !value.nil?
             data = "#{index}, '#{name}', '#{value}'"
             data += (1..3).to_a.include?(scope) ? ", #{scope}" : ""
             return "_gaq.push(['_setCustomVar', #{ data }]);"
           end
         end
+      end
+
+      def set_javascript
+        js = <<-HTML
+        var index = parseInt(data.index);
+        if (index >= 1 && index <= 5 && data.name && data.value) {
+          var scope = null;
+          switch (data.scope) {
+            case '1':
+            case '2':
+            case '3':
+              scope = parseInt(data.scope); break;
+            case 'visitor': scope = 1; break;
+            case 'session': scope = 2; break;
+            case 'page': scope = 3; break;
+            default: scope = data.scope;
+          }
+          _gaq.push(['_setCustomVar', index, data.name, data.value, scope]);
+        }
+        HTML
       end
 
       # http://code.google.com/apis/analytics/docs/gaJS/gaJSApiEcommerce.html#_gat.GA_Tracker_._addTrans
