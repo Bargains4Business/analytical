@@ -20,21 +20,20 @@ module Analytical
 
             ga('create', '#{options[:key]}', '#{options[:domain]}');
             ga('send', 'pageview');
-            setTimeout("ga('send','event','Valid Pageview','time on page more than 15 seconds')",15000);
 
-          </script>
+          </script>          
           HTML
           js
         end
-
-        def event(name, *args)
-          name_words = name.split(' ')
-          action = name_words.first
-          category = name_words[1..name_words.size].join('')
-          "ga('send', {'hitType': 'event', 'eventCategory': '#{category}', 'eventAction': '#{action}', 'eventValue': 1});"
-        end
       end
 
+      def event(name, *args)
+        data = args.first || {}
+        data = data[:value] if data.is_a?(Hash)
+        data_string = !data.nil? ? ", #{data}" : ""
+        "_gaq.push(['_trackEvent', \"Event\", \"#{name}\"" + data_string + "]);"
+        "ga('send', 'event', \"Event\", \"#{name}\"" + data_string + ");"
+      end
     end
   end
 end

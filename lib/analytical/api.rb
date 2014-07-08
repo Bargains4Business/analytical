@@ -11,15 +11,22 @@ module Analytical
 
     def initialize(options={})
       @options = options
-      @modules = @options[:modules].inject(ActiveSupport::OrderedHash.new) do |h, m|
+      @modules = ActiveSupport::OrderedHash.new
+      @options[:modules].each do |m|
         module_options = @options.merge(@options[m] || {})
         module_options.delete(:modules)
         module_options[:session_store] = Analytical::SessionCommandStore.new(@options[:session], m) if @options[:session]
-        new_module = "Analytical::Modules::#{m.to_s.camelize}".constantize.new(module_options)
-        h[m] = new_module if new_module.enabled?
-        h
+        @modules[m] = get_mod(m).new(module_options)
       end
       @dummy_module = Analytical::Modules::DummyModule.new
+    end
+
+    def get_mod(name)
+      name = name.to_s.camelize
+      "Analytical::Modules::#{name}".constantize
+    rescue NameError
+      raise "You're trying to configure a module named '#{name}', but " +
+        "Analytical doesn't have one. Check your analytical.yml file for typos."
     end
 
     #
@@ -77,7 +84,7 @@ module Analytical
 
       if options[:javascript_helpers]
         if Gem::Version.new(::Rails::VERSION::STRING) >= Gem::Version.new('3.1.0')  # Rails 3.1 lets us override views in engines
-          js << options[:controller].send(:render_to_string, :partial=>'analytical_javascript') if options[:controller]
+          js << options[:controller].send(:render_to_string, :partial=>'analytical_javascript', :formats => [:html], :handlers => [:erb]) if options[:controller]
         else # All other rails
           _partial_path = Pathname.new(__FILE__).dirname.join('..', '..', 'app/views/application', '_analytical_javascript.html.erb').to_s
           js << options[:controller].send(:render_to_string, :file=>_partial_path, :layout=>false) if options[:controller]
