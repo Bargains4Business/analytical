@@ -118,7 +118,7 @@ module Analytical
       #   // Your code here...
       # }
       def set_javascript
-        set({}).gsub(/"?\{\}"?/,'data') if respond_to?(:event)
+        str = set({}) and str.gsub(/"?\{\}"?/,'data') if respond_to?(:event)
       end
     end
   end
