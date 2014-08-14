@@ -19,6 +19,7 @@ module Analytical
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
             ga('create', '#{options[:key]}', '#{options[:domain]}');
+            ga('require', 'displayfeatures');
             ga('send', 'pageview');
             setTimeout("ga('send','event','Valid Pageview','time on page more than 15 seconds')",15000);
 
