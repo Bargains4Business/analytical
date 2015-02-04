@@ -5,7 +5,7 @@ module Analytical
 
       def initialize(options={})
         super
-        @tracking_command_location = :head_prepend
+        @tracking_command_location = :head_append
       end
 
       def init_javascript(location)
