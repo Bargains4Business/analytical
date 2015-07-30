@@ -18,10 +18,14 @@ module Analytical
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            ga('create', '#{options[:key]}', '#{options[:domain]}');
+            ga('create', '#{options[:key]}', '#{options[:domain]}', {
+              'allowLinker': true
+            });
             ga('require', 'displayfeatures');
             ga('send', 'pageview');
-            setTimeout("ga('send','event','Valid Pageview','time on page more than 15 seconds')",15000);
+            ga('require', 'linker');
+            ga('linker:autoLink', #{options[:domain_linking]}, false, true);
+            setTimeout("ga('send','event','Valid Pageview','time on page more than 15 seconds')",#{options[:pageview]});
 
           </script>
           HTML
