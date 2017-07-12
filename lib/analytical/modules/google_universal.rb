@@ -25,7 +25,7 @@ module Analytical
             ga('send', 'pageview');
             ga('require', 'linker');
             ga('linker:autoLink', #{options[:domain_linking]}, false, true);
-            setTimeout("ga('send','event','Valid Pageview','time on page more than 15 seconds')",#{options[:pageview]});
+            setTimeout(function() { ga('send','event','Valid Pageview','time on page more than 15 seconds'); },#{options[:pageview]});
 
           </script>
           HTML
